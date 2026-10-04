@@ -11,4 +11,22 @@ if(MSVC)
     add_compile_options(/utf-8)
 endif()
 
-add_executable(sokoban sokoban.cpp levels.h levels.cpp)
+add_executable(sokoban sokoban.cpp level_loader.cpp level_loader.h)
+
+# 拉取 nlohmann-json（单头文件 JSON 库，header-only，无需编译）
+include(FetchContent)
+FetchContent_Declare(nlohmann_json
+    URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+)
+FetchContent_MakeAvailable(nlohmann_json)
+
+target_link_libraries(sokoban PRIVATE nlohmann_json::nlohmann_json)
+
+# 每次编译后自动把 levels 拷到 exe 旁边（复刻 minesweeper 的 res 拷贝）
+add_custom_command(
+    TARGET sokoban POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/levels"
+        "$<TARGET_FILE_DIR:sokoban>/levels"
+)
