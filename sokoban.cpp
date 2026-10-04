@@ -4,27 +4,27 @@
 #include <windows.h>
 #include <thread>
 #include <chrono>
-#include "levels.h"
+#include "level_loader.h"
 using namespace std;
 
 
 
 // 当前正在游玩的地图（运行时复制关卡数据到这里）
-char map[ROW][COL];
+vector<vector<char>> map;
 
 // 记录当前是第几关
 int currentLevel = 0;
+// 关卡文件列表：新增关卡 = 加一个 json 文件 + 这里加一行
+vector<string> levelFiles = {
+    "levels/level_1.json",
+    "levels/level_2.json",
+    "levels/level_3.json"
+};
 
 // 加载对应序号的关卡
 void loadLevel(int levelIdx)
 {
-    for(int i = 0; i < ROW; i++)
-    {
-        for(int j = 0; j < COL; j++)
-        {
-            map[i][j] = levels[levelIdx][i][j];
-        }
-    }
+    map = loadLevelFromJson(levelFiles[levelIdx]);
 }
 
 // 光标移动到指定坐标，替代清屏，消除闪烁
@@ -38,9 +38,11 @@ void gotoxy(int x, int y)
 
 void drawMap()
 {
-    for (int i = 0; i < ROW; i++)
+    int rows = (int)map.size();
+    int cols = (int)map[0].size();
+    for (int i = 0; i < rows; i++)
     {
-        for (int j = 0; j < COL; j++)
+        for (int j = 0; j < cols; j++)
         {
             cout << map[i][j];
         }
@@ -50,9 +52,11 @@ void drawMap()
 
 bool checkWin()
 {
-    for (int i = 0; i < ROW; i++)
+    int rows = (int)map.size();
+    int cols = (int)map[0].size();
+    for (int i = 0; i < rows; i++)
     {
-        for (int j = 0; j < COL; j++)
+        for (int j = 0; j < cols; j++)
         {
             if (map[i][j] == '$')
                 return false; 
@@ -63,11 +67,13 @@ bool checkWin()
 
 void move(int dx, int dy)
 {
+    int rows = (int)map.size();
+    int cols = (int)map[0].size();
     int px, py;
     // 1. 先找到玩家 @ 的坐标
-    for (int i = 0; i < ROW; i++)
+    for (int i = 0; i < rows; i++)
     {
-        for (int j = 0; j < COL; j++)
+        for (int j = 0; j < cols; j++)
         {
             if (map[i][j] == '@' || map[i][j] == '+')
             {
@@ -110,7 +116,8 @@ void move(int dx, int dy)
         int bx = nx + dx;
         int by = ny + dy;
         // 箱子前方是墙/箱子，推不动
-        if (map[by][bx] == '#' || map[by][bx] == '$' || map[by][bx] == '*')
+        if (bx < 0 || bx >= cols || by < 0 || by >= rows ||
+            map[by][bx] == '#' || map[by][bx] == '$' || map[by][bx] == '*')
             return;
 
         // 箱子可以推动
@@ -141,6 +148,7 @@ void move(int dx, int dy)
 
 int main()
 {
+    SetConsoleOutputCP(CP_UTF8);
     // 隐藏控制台跳动光标
     CONSOLE_CURSOR_INFO cursorInfo;
     cursorInfo.dwSize = 1;
@@ -148,8 +156,18 @@ int main()
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
 
     char op;
-    // 程序启动加载第0关
-    loadLevel(currentLevel);
+    // 程序启动加载第 0 关（失败则提示并退出）
+    try
+    {
+        loadLevel(currentLevel);
+    }
+    catch (const std::exception& e)
+    {
+        cout << "关卡加载失败: " << e.what() << endl;
+        cout << "请确认 levels/ 目录下有 level_1.json ~ level_3.json" << endl;
+        return 1;
+    }
+
     gotoxy(0, 0);
     drawMap();
     cout << "W-Up S-Down A-Left D-Right Q-Quit R-Restart Level " << currentLevel+1 << endl;
@@ -185,7 +203,7 @@ int main()
             // 通关检测
             if (checkWin())
             {
-                if(currentLevel < MAX_LEVEL - 1)
+                if (currentLevel < (int)levelFiles.size() - 1)
                 {
                     // 还有下一关，自动切换
                     currentLevel++;
