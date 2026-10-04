@@ -18,7 +18,8 @@ int currentLevel = 0;
 vector<string> levelFiles = {
     "levels/level_1.json",
     "levels/level_2.json",
-    "levels/level_3.json"
+    "levels/level_3.json",
+    "levels/level_4.json"
 };
 
 // 加载对应序号的关卡
