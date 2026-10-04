@@ -1,0 +1,12 @@
+# VS 本地缓存
+.vs/
+*.user
+CMakeSettings.json
+
+# CMake 构建产物
+out/
+build/
+cmake-build-*/
+
+# 可执行文件
+*.exe
