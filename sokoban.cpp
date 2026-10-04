@@ -131,7 +131,11 @@ void move(int dx, int dy)
             map[py][px] = '.';
         else
             map[py][px] = ' ';
-        map[ny][nx] = '@';
+
+        if (map[ny][nx] == '.')  
+            map[ny][nx] = '+';
+        else
+            map[ny][nx] = '@';
     }
 }
 
