@@ -11,4 +11,4 @@ if(MSVC)
     add_compile_options(/utf-8)
 endif()
 
-add_executable(sokoban sokoban.cpp)
+add_executable(sokoban sokoban.cpp levels.h levels.cpp)
