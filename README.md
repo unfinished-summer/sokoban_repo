@@ -1,6 +1,6 @@
 # Sokoban 推箱子小游戏
 
-基于 C++ 控制台的经典推箱子游戏，仅依赖 Windows 系统 API 与标准 C++ 库，无需图形引擎，原生控制台运行。内置 3 个递进难度关卡，支持 WASD 移动、关卡重置、通关自动切关、全局通关判定，采用光标定位刷新画面，解决全屏清屏闪烁问题。关卡数据使用 Tiled 导出的 JSON 文件独立存放，数据层与游戏逻辑层分离。
+基于 C++ 控制台的经典推箱子游戏，仅依赖 Windows 系统 API 与标准 C++ 库，无需图形引擎，原生控制台运行。内置 4 个递进难度关卡，支持 WASD 移动、关卡重置、通关自动切关、全局通关判定，采用光标定位刷新画面，解决全屏清屏闪烁问题。关卡数据使用 Tiled 导出的 JSON 文件独立存放，数据层与游戏逻辑层分离。
 
 ## 符号规则
 
@@ -39,7 +39,7 @@
 
 1. 将所有箱子全部推到终点 `.` 上（全部变为 `*`）即通关本关；
 2. 箱子无法穿过墙壁、其他箱子，仅前方为空地/终点时才能推动；
-3. 单关通关后自动加载下一关卡，全部 3 关完成则游戏胜利结束；
+3. 单关通关后自动加载下一关卡，全部 4 关完成则游戏胜利结束；
 4. 操作失误可按 R 一键重置当前关卡初始布局。
 
 ## 项目结构
@@ -51,7 +51,8 @@ sokoban_repo/
 ├── levels/
 │   ├── level_1.json     # Tiled 导出的关卡数据（第 1 关）
 │   ├── level_2.json     # 第 2 关
-│   └── level_3.json     # 第 3 关
+│   ├── level_3.json     # 第 3 关
+│   └── level_4.json     # 第 4 关（Tiled 图形化）
 ├── CMakeLists.txt       # 构建配置（FetchContent 自动拉取 nlohmann-json）
 └── README.md            # 项目说明
 ```
@@ -100,8 +101,8 @@ build\sokoban.exe
 ### 1. 新增关卡（推荐用 Tiled 编辑）
 
 1. 用 [Tiled](https://www.mapeditor.org/) 绘制新地图（图块编号见上文符号规则表）；
-2. 「文件 → 导出为 JSON」保存到 `levels/level_4.json`；
-3. 在 `sokoban.cpp` 的 `levelFiles` 列表末尾加一行 `"levels/level_4.json"`；
+2. 「文件 → 导出为 JSON」保存到 `levels/level_5.json`；
+3. 在 `sokoban.cpp` 的 `levelFiles` 列表末尾加一行 `"levels/level_5.json"`；
 4. 重新生成并运行。
 
 ### 2. 修改地图尺寸
